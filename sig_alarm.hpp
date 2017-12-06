@@ -1,6 +1,10 @@
 #include <iostream>
+#include <functional>
+#include <string>
+
 #include <cstdint>
 #include <cerrno>	    // perror
+#include <cstring>
 
 #include <unistd.h>	    // access(), fork(), alarm()
 #include <sys/types.h>
