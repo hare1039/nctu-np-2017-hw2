@@ -98,6 +98,7 @@ int main(int argc, char *argv[])
 			now_transmitting = 0;
 			close_alarm = true;
 			{std::map<int, std::vector<byte_t>>().swap(file_blocks);}
+			{std::vector<Packet>().swap(packets);};
 			out_file.close();
 			cur_file_path = "";
 		}

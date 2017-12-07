@@ -97,6 +97,8 @@ int main(int argc, char *argv[])
 			}
 			
 			{std::map<int, std::vector<byte_t>>().swap(file_blocks);}
+			now_transmitting = 0;
+			{std::vector<Packet>().swap(packets);}
 			out_file.close();
 			cur_file_path = "";
 		}
