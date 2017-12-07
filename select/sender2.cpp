@@ -6,18 +6,18 @@
 #include <string>
 
 #include <cstdint>
-#include <cerrno>       // perror                                                                                      
+#include <cerrno>       // perror
 #include <cstring>
 
-#include <unistd.h>     // access(), fork(), alarm()                                                                   
+#include <unistd.h>     // access(), fork(), alarm()
 #include <sys/types.h>
-#include <sys/socket.h> // socket(), connect()                                                                         
-#include <sys/select.h> // select()                                                                                    
-#include <sys/time.h>   // struct timeval                                                                              
-#include <sys/wait.h>   // wait()                                                                                      
-#include <netinet/in.h> // htons(), htonl()                                                                            
-#include <arpa/inet.h>  // inet_pton()                                                                                 
-#include <signal.h>     // signal()  
+#include <sys/socket.h> // socket(), connect()
+#include <sys/select.h> // select()
+#include <sys/time.h>   // struct timeval
+#include <sys/wait.h>   // wait()
+#include <netinet/in.h> // htons(), htonl()
+#include <arpa/inet.h>  // inet_pton()
+#include <signal.h>     // signal()
 #include "packet.hpp"
 #include "utility.hpp"
 
@@ -55,10 +55,10 @@ int main(int argc, char *argv[])
 	struct sockaddr_in sockaddr;
 	parse_endpoint(sockaddr, std::string(argv[1]) + ":" + std::string(argv[2]));
 
-	
+
 	int socketfd = socket(AF_INET, SOCK_DGRAM, 0);
 	check_error("socket", socketfd);
-	
+
 	std::ifstream input(argv[3], std::ios::in | std::ios::binary);
 	std::string file_data = [&input]{ std::stringstream ss; ss << input.rdbuf(); return ss.str();}();
 	std::size_t size = file_data.size();
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 		for(int i(0); i < size; i++)
 		{
 			packets.at(i).set_ack_num(now_transmitting).send();
-		
+
 			byte_t raw[packet_size];
 			if(select_timeout(socketfd, TIMEOUT) == 0)
 				redo();
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 				std::size_t len = recvfrom(socketfd, raw, packet_size, 0, NULL, NULL);
 				Packet p(raw, len);
 				int ack = p.extract_ack();
-				std::cout << "ack: " << ack << std::endl; 
+				std::cout << "ack: " << ack << std::endl;
 				now_transmitting = ack > now_transmitting ? ack: now_transmitting;
 			}
 		}

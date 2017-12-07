@@ -9,11 +9,14 @@ constexpr std::size_t packet_size = packet_data_size + packet_header_size;
 class Packet
 {
 public:
-	Packet(int fd, int seq): socket_fd(fd) {
+	Packet(int fd, int seq): socket_fd(fd)
+	{
+		std::memset(data, 0, sizeof(data));
 		seq_num.int_t = seq;
 	}
 	Packet(byte_t b[], int size)
 	{
+		std::memset(data, 0, sizeof(data));
 		for(int i(0); i < size; i++)
 			this->data[i] = b[i];
 	}
@@ -74,6 +77,13 @@ public:
 		return (data[8])? true: false;
 	}
 
+	int seq_num_from_data()
+	{
+		for(int i(0); i<4; i++)
+			seq_num.byte_t[i] = data[i];
+		return seq_num.int_t;
+	}
+	
 	Packet& set_finish()
 	{
 		std::memset(data + 12, 0, sizeof(data) - 12);
@@ -86,10 +96,21 @@ public:
 		return (data[9])? true: false;
 	}
 
+	std::string get_data_as_string()
+	{
+		std::string d;
+		for(int i(12); i<packet_size; i++)
+			if(data[i] == '\0')
+				break;
+			else
+				d += data[i];
+		return d;
+	}
 	
 	Packet& send()
 	{
-		int size = sizeof(sockaddr);		
+		int size = sizeof(sockaddr);
+		std::cout << &addr << "\n";
 		std::size_t len = sendto(socket_fd, data, packet_size, 0, (struct sockaddr*)&addr, size);
 		check_error("sending...", len);
 		return *this;
