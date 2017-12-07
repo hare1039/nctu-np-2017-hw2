@@ -60,12 +60,16 @@ namespace udp_sender
 	{
 	public:
 		Packet(int fd, int seq): socket_fd(fd), seq_num(seq) {}
-		Packet(byte_t b[], int size) { std::copy(b, b + size, this->data); }
+		Packet(byte_t b[], int size)
+		{
+			for(int i(0); i < size; i++)
+				this->data[i] = b[i];
+		}
 		byte_t data[packet_size];
 		int socket_fd;
 		int seq_num;
 		int ack_seq_num;
-		struct sockaddr * addr;
+		struct sockaddr_in * addr;
 		template<class iterator_type>
 		Packet& data_set(iterator_type begin, iterator_type end)
 		{
@@ -92,14 +96,14 @@ namespace udp_sender
                 data[i] = static_cast<char*>(static_cast<void*>(&ack_seq_num))[i];
 			return *this;
 		}
-		Packet& set_sockaddr(struct sockaddr * a)
+		Packet& set_sockaddr(struct sockaddr_in * a)
 		{
 			this->addr = a;
 			return *this;
 		}
 		Packet& send_sig(void (*on_failure)(int))
 		{
-			sendto(socket_fd, &data, sizeof(data) + 1, 0, this->addr, sizeof(this->addr));
+			sendto(socket_fd, &data, sizeof(data) + 1, 0, reinterpret_cast<struct sockaddr *>(this->addr), sizeof(this->addr));
 			signal(SIGALRM, on_failure);
 			siginterrupt(SIGALRM, 1);
 			std::cout << "signaled\n";
