@@ -18,8 +18,8 @@
 #include <netinet/in.h> // htons(), htonl()
 #include <arpa/inet.h>  // inet_pton()
 #include <signal.h>     // signal()
-#include "packet.hpp"
-#include "utility.hpp"
+#include "../packet.hpp"
+#include "../utility.hpp"
 
 
 constexpr int TIMEOUT = 3;
